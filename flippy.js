@@ -15,7 +15,7 @@
 		var flip = factory();
 		jQuery.fn.flip = function(){
 			// call flip with elements set to this collection
-			flip.apply(null, this.toArray().concat(arguments));
+			flip.apply(null, [this.toArray()].concat([].slice.call(arguments)));
 			return this;
 		};
 	} else if (typeof module === "object" && module.exports) { // CommonJS support
@@ -47,7 +47,12 @@
 		}
 		// fail early if we shouldn't animate, or if we have no elements
 		if (!+options.duration || !elements || elements.length === 0) {
-			return console.warn("[FLIP] Tried to FLIP empty element set, or with 0 duration");
+			// console.warn("[FLIP] Tried to FLIP empty element set, or with 0 duration");
+			doChange();
+			if (options.callback) {
+				options.callback();
+			}
+			return;
 		}
 		// support single element
 		elements = elements.length ? elements : [elements];
@@ -74,6 +79,14 @@
 	      scaleHeight: _old.height / _new.height
 	    };
 
+	    // if the element was removed, it won't have any data; remove it from the set (but don't mess with index's)
+	    // we'll also remove any element that doesn't need to be animated (ie. no change)
+			if (!(_new.bottom || _new.height || _new.left || _new.right || _new.top || _new.width)
+					|| (delta.left === 0 && delta.top === 0 && delta.scaleWidth === 1 && delta.scaleHeight === 1)) {
+				elements[i] = undefined;
+				continue;
+			}
+
 	    // create transform
 	    var moving = delta.left.toFixed(2) !== "0.00" || // if either left or top delta isn't 0
 	    								delta.top.toFixed(2) !== "0.00";
@@ -90,7 +103,7 @@
 					delta.scaleHeight.toFixed(2) +
 				")" : "")).trim();
 
-	    // add appropriate classes
+		    // add appropriate classes
 			if (moving || scaling) {
 				elm.classList.add(options.animatingClass);
 			}
@@ -99,11 +112,27 @@
 			}
 		}
 
-		// force a reflow
-		+elements[0].offsetHeight;
+		// called once a transition has ended; once every element calls it, it calls callback
+		var _times = 0;
+		function _onEnd(){
+			if (++_times >= elements.length && options.callback) {
+				options.callback();
+			}
+		}
 
-		// then add CSS animations
+		var reflowed = false;
+		// add CSS animations
 		for (i = 0; i < j; ++i) {
+			if (!elements[i]) { // if the element was removed earlier, skip
+				_onEnd();
+				continue;
+			}
+
+			if (!reflowed) {
+				+elements[i].offsetHeight; // force a reflow
+				reflowed = true;
+			}
+
 			elements[i].style.transition = "transform "+options.duration+"s "+options.ease;
 			elements[i].style.transform = "";
 
@@ -119,14 +148,6 @@
 				// call callback once everything is done
 				_onEnd();
 			})
-		}
-
-		// called once a transition has ended; once every element calls it, it calls callback
-		var _times = 0;
-		var _onEnd = function(){
-			if (++_times >= elements.length && options.callback) {
-				options.callback();
-			}
 		}
 	}
 
