@@ -22,9 +22,9 @@ flip(elms,
     );
   },
   
-  function(){ // called when the animations finish
+  {callback: function(){ // called when the animations finish
     console.log("Animations have finished");
-  }
+  }}
 );
 ```
 
@@ -39,9 +39,9 @@ $(".notifications").flip(
     $container.prepend( generateNotification() );
   },
   
-  function() { // called when the animations finish
+  {callback: function() { // called when the animations finish
     console.log("Animations have finished");
-  }
+  }}
 );
 ```
 
