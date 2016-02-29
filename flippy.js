@@ -65,6 +65,7 @@
 		doChange();
 
 		// transform back to old positions
+    var _oldStyles = [];
 		for (var i = 0, j = elements.length; i < j; ++i) {
 			var elm = elements[i],
 			    _old = old[i],
@@ -93,7 +94,10 @@
 	    var scaling = delta.scaleWidth.toFixed(2) !== "1.00" || // if either width or height scale isn't 1
 	    								delta.scaleHeight.toFixed(2) !== "1.00";
 
-	    elm.style.transform = 
+	    // CSS transforms work additively
+	    // `translateX(5px) translateX(5px)` equals `translateX(10px)`
+	    // this means we can simply append our transform
+	    var transform = 
 	    	((moving ? "translate(" + // if we're moving, add translate transform
 	    		delta.left.toFixed(2)+"px," +
 	    		delta.top.toFixed(2)+"px" +
@@ -103,7 +107,14 @@
 					delta.scaleHeight.toFixed(2) +
 				")" : "")).trim();
 
-		    // add appropriate classes
+      // more compatible way would be to use .getComputedStyle - but that forces reflow
+      _oldStyles[i] = {
+        transform: elm.style.transform,
+        transition: elm.style.transition
+      };
+      elm.style.transform = (_oldStyles[i].transform ? _oldStyles[i].transform + " " : "") + transform;
+
+		  // add appropriate classes
 			if (moving || scaling) {
 				elm.classList.add(options.animatingClass);
 			}
@@ -133,21 +144,24 @@
 				reflowed = true;
 			}
 
-			elements[i].style.transition = "transform "+options.duration+"s "+options.ease;
-			elements[i].style.transform = "";
+      var oldStyle = _oldStyles[i] || {};
+			elements[i].style.transition =
+        (oldStyle.transition ? oldStyle.transition + ", " : "") +
+        "transform "+options.duration+"s "+options.ease;
+			elements[i].style.transform = oldStyle.transform || "";
 
 			// bind listener for transitionend
-			elements[i].addEventListener("transitionend", function self(e){
+			elements[i].addEventListener("transitionend", (function(style){return function self(e){
 				if (e.propertyName !== "transform") return;
 
 				// remove our stuff
-				this.style.transition = "";
+				this.style.transition = style.transition;
 				this.classList.remove(options.animatingClass, options.scalingClass);
 				this.removeEventListener("transitionend", self); // including this listener
 
 				// call callback once everything is done
 				_onEnd();
-			})
+			}})(oldStyle));
 		}
 	}
 
