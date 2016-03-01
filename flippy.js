@@ -65,56 +65,56 @@
 		doChange();
 
 		// transform back to old positions
-    var _oldStyles = [];
+		var _oldStyles = [];
 		for (var i = 0, j = elements.length; i < j; ++i) {
 			var elm = elements[i],
 			    _old = old[i],
 			    _new = elm.getBoundingClientRect();
 
 			// calculating offset from middle of object
-	    // this works with flexbox (calculating from corner does not)
-	    var delta = {
-	      left: (_old.left+_old.width/2) - (_new.left+_new.width/2),
-	      top: (_old.top+_old.height/2) - (_new.top+_new.height/2),
-	      scaleWidth: _old.width / _new.width,
-	      scaleHeight: _old.height / _new.height
-	    };
+			// this works with flexbox (calculating from corner does not)
+			var delta = {
+				left: (_old.left+_old.width/2) - (_new.left+_new.width/2),
+				top: (_old.top+_old.height/2) - (_new.top+_new.height/2),
+				scaleWidth: _old.width / _new.width,
+				scaleHeight: _old.height / _new.height
+			};
 
-	    // if the element was removed, it won't have any data; remove it from the set (but don't mess with index's)
-	    // we'll also remove any element that doesn't need to be animated (ie. no change)
+			// if the element was removed, it won't have any data; remove it from the set (but don't mess with index's)
+			// we'll also remove any element that doesn't need to be animated (ie. no change)
 			if (!(_new.bottom || _new.height || _new.left || _new.right || _new.top || _new.width)
 					|| (delta.left === 0 && delta.top === 0 && delta.scaleWidth === 1 && delta.scaleHeight === 1)) {
 				elements[i] = undefined;
 				continue;
 			}
 
-	    // create transform
-	    var moving = delta.left.toFixed(2) !== "0.00" || // if either left or top delta isn't 0
-	    								delta.top.toFixed(2) !== "0.00";
-	    var scaling = delta.scaleWidth.toFixed(2) !== "1.00" || // if either width or height scale isn't 1
-	    								delta.scaleHeight.toFixed(2) !== "1.00";
+			// create transform
+			var moving = delta.left.toFixed(2) !== "0.00" || // if either left or top delta isn't 0
+			                delta.top.toFixed(2) !== "0.00";
+			var scaling = delta.scaleWidth.toFixed(2) !== "1.00" || // if either width or height scale isn't 1
+			                delta.scaleHeight.toFixed(2) !== "1.00";
 
-	    // CSS transforms work additively
-	    // `translateX(5px) translateX(5px)` equals `translateX(10px)`
-	    // this means we can simply append our transform
-	    var transform = 
-	    	((moving ? "translate(" + // if we're moving, add translate transform
-	    		delta.left.toFixed(2)+"px," +
-	    		delta.top.toFixed(2)+"px" +
-	    	")" : "") +
-				(scaling ? " scale(" + // if we're scaling, add scale transform
-					delta.scaleWidth.toFixed(2)+"," +
-					delta.scaleHeight.toFixed(2) +
-				")" : "")).trim();
+			// CSS transforms work additively
+			// `translateX(5px) translateX(5px)` equals `translateX(10px)`
+			// this means we can simply append our transform
+			var transform = 
+			  ((moving ? "translate(" + // if we're moving, add translate transform
+			    delta.left.toFixed(2)+"px," +
+			    delta.top.toFixed(2)+"px" +
+			  ")" : "") +
+			  (scaling ? " scale(" + // if we're scaling, add scale transform
+			    delta.scaleWidth.toFixed(2)+"," +
+			    delta.scaleHeight.toFixed(2) +
+			  ")" : "")).trim();
 
-      // more compatible way would be to use .getComputedStyle - but that forces reflow
-      _oldStyles[i] = {
-        transform: elm.style.transform,
-        transition: elm.style.transition
-      };
-      elm.style.transform = (_oldStyles[i].transform ? _oldStyles[i].transform + " " : "") + transform;
+			// more compatible way would be to use .getComputedStyle - but that forces reflow
+			_oldStyles[i] = {
+				transform: elm.style.transform,
+				transition: elm.style.transition
+			};
+			elm.style.transform = (_oldStyles[i].transform ? _oldStyles[i].transform + " " : "") + transform;
 
-		  // add appropriate classes
+			// add appropriate classes
 			if (moving || scaling) {
 				elm.classList.add(options.animatingClass);
 			}
@@ -144,10 +144,10 @@
 				reflowed = true;
 			}
 
-      var oldStyle = _oldStyles[i] || {};
+			var oldStyle = _oldStyles[i] || {};
 			elements[i].style.transition =
-        (oldStyle.transition ? oldStyle.transition + ", " : "") +
-        "transform "+options.duration+"s "+options.ease;
+			  (oldStyle.transition ? oldStyle.transition + ", " : "") +
+			  "transform "+options.duration+"s "+options.ease;
 			elements[i].style.transform = oldStyle.transform || "";
 
 			// bind listener for transitionend
