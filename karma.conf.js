@@ -1,3 +1,5 @@
+const isCI = require("process").env.CI;
+
 // Karma configuration
 module.exports = function(config) {
     config.set({
@@ -32,7 +34,7 @@ module.exports = function(config) {
         customLaunchers: {
             "Chrome-NoFollow": {
                 base: "Chrome",
-                flags: ["--class=Chrome-NoFollow"]
+                flags: ["--class=Chrome-NoFollow", isCI ? "--no-sandbox" : ""]
             },
             "Firefox-NoFollow": {
                 base: "Firefox",

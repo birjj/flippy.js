@@ -27,9 +27,10 @@
     "webpack-dev-server": "^2.4.5"
   },
   "scripts": {
-    "test": "karma start",
+    "test": "karma start --single-run",
+    "watchTest": "karma start",
     "watch": "webpack --watch",
-    "start": "npm run test & npm run watch",
+    "start": "npm run watchTest & npm run watch",
     "build": "webpack -p"
   },
   "dependencies": {}
