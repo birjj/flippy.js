@@ -1,3 +1,4 @@
+/* eslint-env node */
 const path = require("path");
 
 module.exports = {
@@ -12,11 +13,12 @@ module.exports = {
     },
     module: {
         rules: [
-            { test: /.js$/,
-              use: {
-                  loader: "babel-loader",
-                  options: { presets: ["env"] }
-              }
+            {
+                test: /.js$/,
+                use: {
+                    loader: "babel-loader",
+                    options: { presets: ["env"] }
+                }
             }
         ]
     }

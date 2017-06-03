@@ -81,8 +81,6 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-
-
 /**
  * FLIP animation helper
  * See https://aerotwist.com/blog/flip-your-animations/
@@ -91,7 +89,162 @@ return /******/ (function(modules) { // webpackBootstrap
  * Code by Birjolaxew
  */
 
-module.exports = function flip(elms, modifier, options) {};
+
+
+var FLIPElement = __webpack_require__(2);
+
+/**
+ * Animates DOM changes on specified elements
+ * @param {Element|Array<Element>|String} elms  Element(s) to animate
+ * @param {Function} modifier   Is called when the DOM should change
+ * @param {Object} [options]    Various additional options
+ * @param {Function} [options.callback] A function to be called when animation
+ *                                      is done. Receives elms as parameter.
+ * @param {Number} [options.duration]   The length of the animation in seconds.
+ * 
+ * @return {Promise<elms>}  A Promise which resolves once animation is done.
+ */
+module.exports = function flip(elms, modifier, options) {
+    if (!elms || typeof elms !== "string" && !(elms instanceof Array) && !(elms instanceof HTMLElement)) {
+        throw new TypeError("Elements must be a string, array or element");
+    }
+    if (!modifier || !(modifier instanceof Function)) {
+        throw new TypeError("Modifier must be a function");
+    }
+};
+
+/***/ }),
+/* 1 */,
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ * Handler for a single element in a FLIP animation
+ */
+var FLIPElement = function () {
+    function FLIPElement(elm) {
+        _classCallCheck(this, FLIPElement);
+
+        if (!(elm instanceof HTMLElement)) {
+            throw new TypeError("Element must be an HTMLElement");
+        }
+
+        this.elm = elm;
+    }
+
+    /**
+     * Snapshot an elements initial position
+     * Stored in ._first
+     */
+
+
+    _createClass(FLIPElement, [{
+        key: "first",
+        value: function first() {
+            this._first = snapshot(this.elm);
+        }
+
+        /**
+         * Snapshot an elements final position
+         * Stored in ._last
+         */
+
+    }, {
+        key: "last",
+        value: function last() {
+            this._last = snapshot(this.elm);
+        }
+
+        /**
+         * Applies a transform from ._last => ._first
+         * This moves the element back to where it was
+         */
+
+    }, {
+        key: "invert",
+        value: function invert() {
+            var delta = getDelta(this._first, this._last);
+
+            this.elm.style.transformOrigin = "50% 50%";
+            this.elm.style.transform = "translate(" + delta.left.toFixed(2) + "px, " + delta.top.toFixed(2) + "px)\n             scale(" + delta.width.toFixed(2) + ", " + delta.height.toFixed(2) + ")\n             " + this._first.transform;
+            this.elm.style.opacity = this._first.opacity;
+
+            this.elm.style.willChange = "transform,opacity";
+        }
+
+        /**
+         * Plays back the animation
+         */
+
+    }, {
+        key: "play",
+        value: function play() {
+            this.elm.offsetHeight; // force reflow
+            this.elm.style.transition = "transform .4s linear, opacity .4s linear";
+            this.elm.offsetHeight; // force reflow
+            this.elm.style.opacity = this._last.opacity;
+            this.elm.style.transform = this._last.transform;
+        }
+    }]);
+
+    return FLIPElement;
+}();
+
+/**
+ * Gets a snapshot of an element
+ * Returns an object with format
+ * {
+ *   left: <Number>, top: <Number>,
+ *   width: <Number>, height: <Number>,
+ *   opacity: <Number>,
+ *   transform: <String>
+ * }
+ */
+
+
+function snapshot(elm) {
+    var pos = elm.getBoundingClientRect();
+    var styles = window.getComputedStyle(elm);
+    return { // positions are related to center
+        left: pos.left + pos.width / 2,
+        top: pos.top + pos.height / 2,
+        width: pos.width,
+        height: pos.height,
+
+        opacity: parseFloat(styles.opacity),
+        transform: styles.transform === "none" ? "" : styles.trasnform
+    };
+}
+
+/**
+ * Gets the difference between two snapshots
+ * Width/height are scales, left/top are pixel differences
+ */
+function getDelta(alpha, beta) {
+    var delta = {
+        left: alpha.left - beta.left,
+        top: alpha.top - beta.top,
+        width: alpha.width / beta.width,
+        height: alpha.height / beta.height
+    };
+
+    if (alpha.width === 0 && alpha.height === 0) {
+        // the element probably wasn't in the DOM at the time
+        // don't animate left/top
+        delta.left = delta.top = 0;
+    }
+
+    return delta;
+}
+
+module.exports = FLIPElement;
 
 /***/ })
 /******/ ]);

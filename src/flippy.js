@@ -6,6 +6,29 @@
  * Code by Birjolaxew
  */
 
+"use strict";
+const FLIPElement = require("./element.js");
+
+/**
+ * Animates DOM changes on specified elements
+ * @param {Element|Array<Element>|String} elms  Element(s) to animate
+ * @param {Function} modifier   Is called when the DOM should change
+ * @param {Object} [options]    Various additional options
+ * @param {Function} [options.callback] A function to be called when animation
+ *                                      is done. Receives elms as parameter.
+ * @param {Number} [options.duration]   The length of the animation in seconds.
+ * 
+ * @return {Promise<elms>}  A Promise which resolves once animation is done.
+ */
 module.exports = function flip(elms, modifier, options){
+    if (!elms || (typeof elms !== "string"
+                  && !(elms instanceof Array)
+                  && !(elms instanceof HTMLElement))) {
+        throw new TypeError("Elements must be a string, array or element");
+    }
+    if (!modifier || !(modifier instanceof Function)) {
+        throw new TypeError("Modifier must be a function");
+    }
+
 
 };
