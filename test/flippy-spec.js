@@ -26,7 +26,7 @@ describe("Flippy.JS", function() {
     });
     
     // accepts input
-    it("should call the modifier (synchronously)", function(){
+    it("should call the modifier", function(){
         let called = false;
         flip(placeholderElm, ()=>{
             called = true;
@@ -34,21 +34,154 @@ describe("Flippy.JS", function() {
         expect(called).to.be.true;
     });
 
-    // does what it should
-    it("should translate elements back", function(){
+    // inverts
+    it("should invert moved elements", function(){
+        runInvertTest(
+            (elm)=>{
+                elm.style.left = "0px";
+                elm.style.top = "0px";
+            },
+            (elm)=>{
+                elm.style.left = "50px";
+                elm.style.top = "50px";
+            },
+            (elm)=>{
+                elm.style.left = "100px";
+                elm.style.top = "150px";
+            }
+        );
+    });
+    it("should invert resized elements", function(){
+        runInvertTest(
+            (elm)=>{
+                elm.style.width = "100px";
+                elm.style.height = "100px";
+            },
+            (elm)=>{
+                elm.style.width = "50px";
+                elm.style.height = "50px";
+            },
+            (elm)=>{
+                elm.style.width = "150px";
+                elm.style.height = "100px";
+            }
+        );
+    });
+
+    it("should invert bordered elements", function(){
+        runInvertTest(
+            (elm)=>{
+                elm.style.border = "none";
+            },
+            (elm)=>{
+                elm.style.border = "10px solid red";
+            },
+            (elm)=>{
+                elm.style.border = "50px solid green";
+            }
+        );
+    });
+
+    it("should invert translated elements", function(){
+        runInvertTest(
+            (elm)=>{
+                elm.style.transform = "none";
+            },
+            (elm)=>{
+                elm.style.transform = "translate(10px,10px)";
+            },
+            (elm)=>{
+                elm.style.transform = "translate(50%, 25%)";
+            }
+        );
+    });
+
+    it("should invert rotated elements", function(){
+        runInvertTest(
+            (elm)=>{
+                elm.style.transform = "none";
+            },
+            (elm)=>{
+                elm.style.transform = "rotate(45deg)";
+            }
+        );
+    });
+
+    it("should invert scaled elements", function(){
+        runInvertTest(
+            (elm)=>{
+                elm.style.transform = "none";
+            },
+            (elm)=>{
+                elm.style.transform = "scale(2)";
+            },
+            (elm)=>{
+                elm.style.transform = "scale(1,3)";
+            }
+        );
+    });
+
+    it("should invert multi-transformed elements", function(){
+        runInvertTest(
+            (elm)=>{
+                elm.style.transform = "none";
+            },
+            (elm)=>{
+                elm.style.transform = "translate(10px,20px) rotate(45deg) scale(2)";
+            },
+            (elm)=>{
+                elm.style.transform = "rotate(45deg) translate(10%,20%) scale(1,2)";
+            }
+        );
+    });
+
+
+
+    /**
+     * Runs tests on flippy's ability to invert a DOM change
+     * Tests from base to each state (and the inverse)
+     * @param {Function} base       Gets elm as only param. Sets the base state.
+     * @param {...Function} states  Gets elm as only param. Sets a state to test.
+     */
+    function runInvertTest(base,...states) {
+        let data;
+
+        for (let i=0; i < states.length; ++i) {
+            let state = states[i];
+
+            data = invertTest(base, state);
+            for (let k in data.pre) {
+                let delta = data.post[k]-data.pre[k];
+                expect(delta).to.be.within(-1,1, `Invert state ${i}-${k}`);
+            }
+
+            data = invertTest(state, base);
+            for (let k in data.pre) {
+                let delta = data.post[k]-data.pre[k];
+                expect(delta).to.be.within(-1,1, `Invert state ${i}r-${k}`);
+            }
+        }
+    }
+    function invertTest(pre,modify) {
         let elm = document.createElement("div");
-        elm.textContent = "should translate elements back";
+        elm.style.position = "absolute";
+        elm.style.top = "50px";
+        elm.style.left = "50px";
+        elm.style.width = "50px";
+        elm.style.height = "50px";
         document.body.appendChild(elm);
 
-        let origPos = elm.getBoundingClientRect();
-        flip(elm, ()=>{
-            elm.style.position = "fixed";
-            elm.style.bottom = "5px";
-            elm.style.right = "5px";
-        });
-        let newPos = elm.getBoundingClientRect();
+        if (pre) {
+            pre(elm);
+        }
+        let prePos = elm.getBoundingClientRect();
+        flip(elm, modify.bind(null, elm));
+        let postPos = elm.getBoundingClientRect();
 
-        expect(origPos.left).to.equal(newPos.left);
-        expect(origPos.top).to.equal(newPos.top);
-    });
+        return {
+            pre: prePos,
+            post: postPos,
+            elm: elm
+        };
+    }
 });

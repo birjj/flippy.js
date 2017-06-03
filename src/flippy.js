@@ -7,7 +7,7 @@
  */
 
 "use strict";
-const FLIPElement = require("./element.js");
+import FLIPElement from "./element";
 
 /**
  * Animates DOM changes on specified elements
@@ -30,5 +30,11 @@ module.exports = function flip(elms, modifier, options){
         throw new TypeError("Modifier must be a function");
     }
 
-
+    // TODO: implement handlers for strings & arrays
+    let elm = new FLIPElement(elms);
+    elm.first();
+    modifier();
+    elm.last()
+       .invert()
+       .play();
 };

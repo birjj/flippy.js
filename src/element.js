@@ -1,7 +1,9 @@
+import { snapshot, getDelta } from "./helpers";
+
 /**
  * Handler for a single element in a FLIP animation
  */
-class FLIPElement {
+export default class FLIPElement {
     constructor(elm) {
         if (!(elm instanceof HTMLElement)) {
             throw new TypeError("Element must be an HTMLElement");
@@ -16,6 +18,9 @@ class FLIPElement {
      */
     first() {
         this._first = snapshot(this.elm);
+        this.debug("first", this._first);
+
+        return this;
     }
 
     /**
@@ -24,6 +29,9 @@ class FLIPElement {
      */
     last() {
         this._last = snapshot(this.elm);
+        this.debug("last", this._last);
+
+        return this;
     }
 
     /**
@@ -34,71 +42,43 @@ class FLIPElement {
         let delta = getDelta(this._first, this._last);
 
         this.elm.style.transformOrigin = "50% 50%";
+        // if the original transform contains rotates, we need to move first
+        // (so it moves along the non-rotated axis) and scale last (so it scales
+        // along the rotated axis)
         this.elm.style.transform =
             `translate(${delta.left.toFixed(2)}px, ${delta.top.toFixed(2)}px)
-             scale(${delta.width.toFixed(2)}, ${delta.height.toFixed(2)})
-             ${this._first.transform}`;
+             ${this._first.transform}
+             scale(${delta.width.toFixed(2)}, ${delta.height.toFixed(2)})`;
         this.elm.style.opacity = this._first.opacity;
 
         this.elm.style.willChange = "transform,opacity";
+
+        this.debug("invert",delta);
+
+        return this;
     }
 
     /**
      * Plays back the animation
      */
     play() {
-        this.elm.offsetHeight; // force reflow
-        this.elm.style.transition = 
-            `transform .4s linear, opacity .4s linear`;
-        this.elm.offsetHeight; // force reflow
-        this.elm.style.opacity = this._last.opacity;
-        this.elm.style.transform = this._last.transform;
-    }
-}
+        // we wait a frame instead of forcing a reflow
+        requestAnimationFrame(()=>{
+            this.elm.style.transition = 
+                `transform .4s ease, opacity .4s linear`;
+            requestAnimationFrame(()=>{
+                this.elm.style.opacity = this._last.opacity;
+                this.elm.style.transform = this._last.transform;
+            });
+        });
 
-/**
- * Gets a snapshot of an element
- * Returns an object with format
- * {
- *   left: <Number>, top: <Number>,
- *   width: <Number>, height: <Number>,
- *   opacity: <Number>,
- *   transform: <String>
- * }
- */
-function snapshot(elm) {
-    let pos = elm.getBoundingClientRect();
-    let styles = window.getComputedStyle(elm);
-    return { // positions are related to center
-        left: pos.left + pos.width/2,
-        top: pos.top + pos.height/2,
-        width: pos.width,
-        height: pos.height,
-        
-        opacity: parseFloat(styles.opacity),
-        transform: styles.transform === "none" ? "" : styles.trasnform
-    };
-}
-
-/**
- * Gets the difference between two snapshots
- * Width/height are scales, left/top are pixel differences
- */
-function getDelta(alpha, beta) {
-    let delta = {
-        left: alpha.left - beta.left,
-        top: alpha.top - beta.top,
-        width: alpha.width / beta.width,
-        height: alpha.height / beta.height
-    };
-
-    if (alpha.width === 0 && alpha.height === 0) {
-        // the element probably wasn't in the DOM at the time
-        // don't animate left/top
-        delta.left = delta.top = 0;
+        return this;
     }
 
-    return delta;
+    /**
+     * Logs debug info
+     */
+    debug(method, meta) {
+        // console.log("[",this.elm,"] ",method,meta);
+    }
 }
-
-module.exports = FLIPElement;
