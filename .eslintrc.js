@@ -10,6 +10,8 @@ module.exports = {
         "sourceType": "module"
     },
     "rules": {
+        "no-console": "off",
+        "no-unused-vars": "warn",
         "indent": [
             "error",
             2
@@ -20,7 +22,10 @@ module.exports = {
         ],
         "quotes": [
             "error",
-            "double"
+            "double",
+            {
+                "allowTemplateLiterals": true
+            }
         ],
         "semi": [
             "error",

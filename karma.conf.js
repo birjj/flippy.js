@@ -11,7 +11,7 @@ module.exports = function(config) {
     ],
 
     // test results reporter to use
-    reporters: ["mocha", "notify"],
+    reporters: ["mocha"/*, "notify"*/],
 
     // web server port
     port: 9876,
@@ -20,14 +20,24 @@ module.exports = function(config) {
     autoWatch: true,
 
     // start these browsers
-    browsers: ["Chrome", "Firefox"],
+    browsers: ["Chrome-NoFollow", "Firefox-NoFollow"],
 
-    // Concurrency level
     // how many browser should be started simultaneous
     concurrency: 2,
 
-    // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
-    singleRun: false
+    singleRun: false,
+
+    // custom browsers
+    customLaunchers: {
+      "Chrome-NoFollow": {
+        base: "Chrome",
+        flags: ["--class=Chrome-NoFollow"]
+      },
+      "Firefox-NoFollow": {
+        base: "Firefox",
+        flags: ["--class=Firefox-NoFollow"]
+      }
+    }
   });
 };

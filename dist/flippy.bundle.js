@@ -91,9 +91,7 @@ return /******/ (function(modules) { // webpackBootstrap
  * Code by Birjolaxew
  */
 
-console.log("Running", document.body);
-
-module.exports = function () {};
+module.exports = function flip(elms, modifier, options) {};
 
 /***/ })
 /******/ ]);

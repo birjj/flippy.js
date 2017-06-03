@@ -6,6 +6,6 @@
  * Code by Birjolaxew
  */
 
-console.log("Running",document.body);
+module.exports = function flip(elms, modifier, options){
 
-module.exports = function(){};
+};

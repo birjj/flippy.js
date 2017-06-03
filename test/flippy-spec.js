@@ -3,10 +3,30 @@ describe("Flippy.JS", function() {
   it("is defined globally (UMD)", function(){
     expect(flip).to.exist;
   });
+  
+  let placeholderElm = document.createElement("div");
 
-  let elm;
+  it("should throw if not given element", function(){
+    expect(()=>{
+      flip(null, ()=>{});
+    }).to.throw();
+  });
+  it("should throw if not given modifier", function(){
+    expect(()=>{
+      flip(placeholderElm);
+    }).to.throw();
+  });
+  
+  it("should call the modifier (synchronously)", function(){
+    let called = false;
+    flip(placeholderElm, ()=>{
+      called = true;
+    });
+    expect(called).to.be.true;
+  });
+
   it("should translate elements back", function(){
-    elm = document.createElement("div");
+    let elm = document.createElement("div");
     elm.textContent = "should translate elements back";
     document.body.appendChild(elm);
 
@@ -20,9 +40,5 @@ describe("Flippy.JS", function() {
 
     expect(origPos.left).to.equal(newPos.left);
     expect(origPos.top).to.equal(newPos.top);
-  });
-
-  it("should succeed", ()=>{
-    expect(2).to.equal(2);
   });
 });
