@@ -8,9 +8,13 @@ module.exports = function(config) {
 
         // list of files / patterns to load in the browser
         files: [
-            "./dist/flippy.bundle.js",
-            "./test/**/*.js"
+            "./test/**/*.spec.js"
         ],
+
+        // preprocessors for files
+        preprocessors: {
+            "./test/**/*.spec.js": ["webpack"]
+        },
 
         // test results reporter to use
         reporters: ["mocha"/*, "notify"*/],

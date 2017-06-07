@@ -8,7 +8,7 @@
  *   transform: <String>
  * }
  */
-export function snapshot(elm) {
+export function getSnapshot(elm) {
     let pos = getClientRect(elm);
     let styles = window.getComputedStyle(elm);
     return { // positions are related to center
@@ -64,4 +64,12 @@ export function getClientRect(elm) {
     }
 
     return rect;
+}
+
+/**
+ * Turns an option object into a transition string
+ */
+export function getTransitionString(options) {
+    return `transform ${options.duration.toFixed(2)}s ${options.ease},
+            opacity ${options.duration.toFixed(2)}s ${options.ease}`;
 }

@@ -18,9 +18,10 @@ import FLIPElement from "./element";
  *                                      is done. Receives elms as parameter.
  * @param {Number} [options.duration]   The length of the animation in seconds.
  * 
- * @return {Promise<elms>}  A Promise which resolves once animation is done.
+ * @return {Promise<Array<Element>>}    A Promise which resolves once animation 
+ *                                      is done.
  */
-module.exports = function flip(elms, modifier, options){
+export default function flip(elms, modifier, options={}){
     if (!elms || (typeof elms !== "string"
                   && !(elms instanceof Array)
                   && !(elms instanceof HTMLElement))) {
@@ -30,11 +31,45 @@ module.exports = function flip(elms, modifier, options){
         throw new TypeError("Modifier must be a function");
     }
 
-    // TODO: implement handlers for strings & arrays
-    let elm = new FLIPElement(elms);
-    elm.first();
+    // normalize all input types to {Array<Element>}
+    if (typeof elms === "string") {
+        elms = Array.from(document.querySelectorAll(elms));
+    } else if (elms instanceof HTMLElement) {
+        elms = [elms];
+    }
+
+    // make our callback a collective callback
+    let finalCallback;
+    let finalPromise = new Promise(res=>{
+        finalCallback = ()=>{
+            if (optCallback) {
+                optCallback();
+            }
+            res();
+        };
+    });
+    let optCallback = options.callback;
+    let numCalls = elms.length;
+    options.callback = ()=>{
+        if (--numCalls <= 0) {
+            finalCallback();
+        }
+    };
+
+    // convert to {Array<FLIPElement>}
+    elms = elms.map(elm=>{
+        if (!(elm instanceof HTMLElement)) {
+            throw new TypeError("Array must only contain elements");
+        }
+        return new FLIPElement(elm, options);
+    });
+
+    // then FLIP
+    elms.forEach(elm=>elm.first());
     modifier();
-    elm.last()
-       .invert()
-       .play();
-};
+    elms.forEach(elm=>elm.last().invert().play());
+
+    // return a Promise
+    return finalPromise;
+}
+flip.FLIPElement = FLIPElement;
