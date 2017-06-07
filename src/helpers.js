@@ -70,6 +70,7 @@ export function getClientRect(elm) {
  * Turns an option object into a transition string
  */
 export function getTransitionString(options) {
-    return `transform ${options.duration.toFixed(2)}s ${options.ease},
-            opacity ${options.duration.toFixed(2)}s ${options.ease}`;
+    let dur = options.duration/1000;
+    return `transform ${dur.toFixed(2)}s ${options.ease},
+            opacity ${dur.toFixed(2)}s ${options.ease}`;
 }

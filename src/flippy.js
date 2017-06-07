@@ -16,7 +16,10 @@ import FLIPElement from "./element";
  * @param {Object} [options]    Various additional options
  * @param {Function} [options.callback] A function to be called when animation
  *                                      is done. Receives elms as parameter.
- * @param {Number} [options.duration]   The length of the animation in seconds.
+ * @param {Number} [options.duration=400] The length of the animation in milliseconds.
+ * @param {String} [options.ease="ease"] The CSS timing function to use
+ * @param {String} [options.animatingClass="flip-animating"]
+ * @param {String} [options.scalingClass="flip-scaling"]
  * 
  * @return {Promise<Array<Element>>}    A Promise which resolves once animation 
  *                                      is done.
@@ -36,6 +39,10 @@ export default function flip(elms, modifier, options={}){
         elms = Array.from(document.querySelectorAll(elms));
     } else if (elms instanceof HTMLElement) {
         elms = [elms];
+    }
+
+    if (options.debug && console.groupCollapsed) {
+        console.groupCollapsed();
     }
 
     // make our callback a collective callback
@@ -68,6 +75,10 @@ export default function flip(elms, modifier, options={}){
     elms.forEach(elm=>elm.first());
     modifier();
     elms.forEach(elm=>elm.last().invert().play());
+
+    if (options.debug && console.groupCollapsed) {
+        console.groupEnd();
+    }
 
     // return a Promise
     return finalPromise;

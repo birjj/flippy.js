@@ -15,7 +15,7 @@ describe("FLIPElement", function() {
                 );
                 done();
             },
-            duration: 0.2
+            duration: 200
         });
         $elm.first();
         elm.style.left = elm.style.width = "100px";
@@ -45,7 +45,7 @@ describe("FLIPElement", function() {
             callback: ()=>{
                 ++callTimes;
             },
-            duration: 0.05
+            duration: 50
         });
         $elm.first();
         elm.style.left = elm.style.width = "100px";
@@ -56,6 +56,32 @@ describe("FLIPElement", function() {
             expect(callTimes).to.equal(1);
             done();
         }, 250);
+    });
+
+    it("should jump to end when starting a new flip", function(done) {
+        let elm = helpers.createTestElement();
+        let $elm = new FLIPElement(elm, {duration: 400});
+        $elm.first();
+        elm.style.top = elm.style.width = "100px";
+        let pre = elm.getBoundingClientRect();
+        $elm.last()
+            .invert()
+            .play();
+        
+        setTimeout(()=>{
+            $elm.first();
+            elm.style.top = elm.style.width = "150px";
+            $elm.last()
+                .invert();
+            let post = elm.getBoundingClientRect();
+
+            for (let k in pre) {
+                expect(pre[k]-post[k], `${k}: ${pre[k]}=>${post[k]}`)
+                    .to.be.within(-1,1);
+            }
+
+            done();
+        }, 200);
     });
 
     describe(".invert()", function() {
@@ -188,7 +214,7 @@ describe("FLIPElement", function() {
         function invertTest(pre,modify) {
             let elm = helpers.createTestElement();
             let $elm = new FLIPElement(elm, {
-                duration: 0.4,
+                duration: 400,
                 ease: "ease",
                 animatingClass: "flip-animating",
                 scalingClass: "flip-scaling"
@@ -239,7 +265,7 @@ describe("FLIPElement", function() {
                         .to.be.greaterThan(400-16, "time to call callback");
                     done();
                 },
-                duration: 0.4
+                duration: 400
             });
             $elm.first();
             elm.style.left = elm.style.top = "100px";
@@ -309,7 +335,7 @@ describe("FLIPElement", function() {
                     );
                     done();
                 },
-                duration: 0.4
+                duration: 400
             });
             $elm.first();
             elm.style.left = elm.style.top = "100px";
