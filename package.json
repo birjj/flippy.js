@@ -33,6 +33,5 @@
     "watchTest": "karma start",
     "start": "npm run watchTest",
     "build": "webpack -p"
-  },
-  "dependencies": {}
+  }
 }
