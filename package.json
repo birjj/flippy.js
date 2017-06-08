@@ -33,6 +33,6 @@
     "watchTest": "karma start",
     "start": "npm run watchTest",
     "build": "webpack -p",
-    "deploy": "mkdir pages || true && git fetch https://github.com/birjolaxew/flippy.js.git gh-pages || true && git --work-tree=./pages checkout FETCH_HEAD && cp -r dist/ pages/ && rm pages/deployed\\ at*"
+    "deploy": "mkdir pages || true && git fetch https://github.com/birjolaxew/flippy.js.git gh-pages || true && git --work-tree=./pages checkout FETCH_HEAD && rm -R pages/dist/ || true && cp -r dist/ pages/ && rm pages/deployed\\ at*"
   }
 }
