@@ -3,6 +3,13 @@ import FLIPElement from "../src/element";
 import * as helpers from "./test-helpers";
 
 describe("FLIPElement", function() {
+    it("should only allow 1 instance per HTMLElement", function(){
+        let elm = helpers.createTestElement();
+        let $elm1 = new FLIPElement(elm);
+        let $elm2 = new FLIPElement(elm);
+
+        expect($elm1 === $elm2).to.be.true;
+    });
     it("should respect duration option", function(done) {
         let t = performance.now();
         let elm = helpers.createTestElement();
@@ -10,8 +17,8 @@ describe("FLIPElement", function() {
             callback: ()=>{
                 // 16 ms ≈ 1 frame
                 expect(performance.now()-t).to.be.within(
-                    200-16,
-                    200+16*2
+                    200-16*4,
+                    200+16*4
                 );
                 done();
             },
@@ -58,30 +65,64 @@ describe("FLIPElement", function() {
         }, 250);
     });
 
-    it("should jump to end when starting a new flip", function(done) {
-        let elm = helpers.createTestElement();
-        let $elm = new FLIPElement(elm, {duration: 400});
-        $elm.first();
-        elm.style.top = elm.style.width = "100px";
-        let pre = elm.getBoundingClientRect();
-        $elm.last()
-            .invert()
-            .play();
-        
-        setTimeout(()=>{
+    describe(".first()", function(){
+        it("should jump to end when starting a new flip", function(done) {
+            let elm = helpers.createTestElement();
+            let $elm = new FLIPElement(elm, {duration: 400, "ease": "linear"});
             $elm.first();
-            elm.style.top = elm.style.width = "150px";
+            elm.style.top = elm.style.width = "100px";
+            let pre = elm.getBoundingClientRect();
             $elm.last()
-                .invert();
-            let post = elm.getBoundingClientRect();
+                .invert()
+                .play();
+            
+            setTimeout(()=>{
+                $elm.first();
+                elm.style.top = elm.style.width = "150px";
+                $elm.last()
+                    .invert()
+                    .play();
 
-            for (let k in pre) {
-                expect(pre[k]-post[k], `${k}: ${pre[k]}=>${post[k]}`)
-                    .to.be.within(-1,1);
-            }
+                let post = elm.getBoundingClientRect();
+                for (let k in pre) {
+                    expect(pre[k]-post[k], `${k}: ${pre[k]}=>${post[k]}`)
+                        .to.be.within(-1,1);
+                }
 
-            done();
-        }, 200);
+                done();
+            }, 200);
+        });
+
+        it("should call old callback when resetting", function(done){
+            let _firstCalled = false;
+            let elm = helpers.createTestElement();
+            let $elm = new FLIPElement(elm, {
+                callback: ()=>{
+                    _firstCalled = true;
+                }
+            });
+            $elm.first();
+            elm.style.top = elm.style.width = "100px";
+            let pre = elm.getBoundingClientRect();
+            $elm.last()
+                .invert()
+                .play();
+            
+            setTimeout(()=>{
+                $elm = new FLIPElement(elm, {
+                    callback: ()=>{
+                        if (_firstCalled) {
+                            done();
+                        }
+                    }
+                });
+                $elm.first();
+                elm.style.top = elm.style.width = "150px";
+                $elm.last()
+                    .invert()
+                    .play();
+            }, 200);
+        });
     });
 
     describe(".invert()", function() {
@@ -239,6 +280,30 @@ describe("FLIPElement", function() {
     });
 
     describe(".play()", function() {
+        it("should animate", function(done) {
+            let elm = helpers.createTestElement();
+            let $elm = new FLIPElement(elm, {duration: 400});
+            let pre = elm.getBoundingClientRect();
+            $elm.first();
+            elm.style.left = 
+                elm.style.top =
+                elm.style.height =
+                elm.style.width = "100px";
+            let post = elm.getBoundingClientRect();
+            $elm.last()
+                .invert()
+                .play();
+            setTimeout(()=>{
+                let mid = elm.getBoundingClientRect();
+                for (let k in mid) {
+                    expect(pre[k]-mid[k], `pre.${k}: ${pre[k]}=>${mid[k]}`)
+                        .to.not.be.within(-1,1);
+                    expect(post[k]-mid[k], `post.${k}: ${post[k]}=>${mid[k]}`)
+                        .to.not.be.within(-1,1);
+                }
+                done();
+            }, 200);
+        });
         it("should end immediately if there is no change", function(done) {
             let t = performance.now();
             let elm = helpers.createTestElement();
@@ -262,7 +327,7 @@ describe("FLIPElement", function() {
                 callback: function() {
                     // 16 ms ≈ 1 frame
                     expect(performance.now()-t)
-                        .to.be.greaterThan(400-16, "time to call callback");
+                        .to.be.greaterThan(400-16*4, "time to call callback");
                     done();
                 },
                 duration: 400

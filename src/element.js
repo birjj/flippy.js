@@ -1,3 +1,4 @@
+"use strict";
 import { getSnapshot, getDelta, getTransitionString } from "./helpers";
 
 /** @type {Map<HTMLElement, FLIPElement>} */
@@ -13,6 +14,7 @@ export default class FLIPElement {
         }
         if (elmMap.has(elm)) {
             let self = elmMap.get(elm);
+            this.opts = {}; // remove old options
             self.setOptions(options);
             return self;
         }
@@ -21,6 +23,7 @@ export default class FLIPElement {
         elmMap.set(elm, this);
 
         this.elm = elm;
+        this._style = {};
     }
 
     /**
@@ -37,7 +40,7 @@ export default class FLIPElement {
             ease: "ease",
             animatingClass: "flip-animating",
             scalingClass: "flip-scaling"
-        }, options);
+        }, this.opts, options);
     }
 
     /**
@@ -45,6 +48,9 @@ export default class FLIPElement {
      * Stored in ._first
      */
     first() {
+        if (this._playing) {
+            this.stop();
+        }
         this._first = getSnapshot(this.elm);
         this.debug("first", this._first);
 
@@ -56,8 +62,23 @@ export default class FLIPElement {
      * Stored in ._last
      */
     last() {
+        if (!this._first) {
+            throw new Error(".first() must be called before .last()");
+        }
         this._last = getSnapshot(this.elm);
         this.debug("last", this._last);
+
+        // save old styles for when we remove flip
+        this._style.opacity = this.elm.style.opacity;
+        this._style.willChange = this.elm.style.willChange;
+        this._style.transform = this.elm.style.transform;
+        this._style.transformOrigin = this.elm.style.transformOrigin;
+        this._style.transition = this.elm.style.transition;
+
+        for (let k in this._style) {
+            let style = this._style[k];
+            this._style[k] = (style && style!=="none") ? style : "";
+        }
 
         return this;
     }
@@ -67,6 +88,10 @@ export default class FLIPElement {
      * This moves the element back to where it was
      */
     invert() {
+        if (!this._first || !this._last) {
+            throw new Error(".first() and .last() must be called before .invert()");
+        }
+
         let delta = getDelta(this._first, this._last);
 
         this.elm.style.transformOrigin = "50% 50%";
@@ -89,6 +114,9 @@ export default class FLIPElement {
      * Plays back the animation
      */
     play() {
+        if (this._playing) {
+            this.stop();
+        }
         this._playing = true;
 
         // if we're not moving at all, just end without playing
@@ -98,7 +126,8 @@ export default class FLIPElement {
          && Math.abs(this._first.height - this._last.height) <= 1
          && Math.abs(this._first.opacity - this._last.opacity) <= 0.05) {
             this.debug("Ending early because of no change");
-            this.cleanAndFinish();
+            this._animCb = this.opts.callback;
+            this.stop();
             return this;
         }
 
@@ -117,20 +146,32 @@ export default class FLIPElement {
         this.elm.style.opacity = this._last.opacity;
         this.elm.style.transform = this._last.transform;
 
+        // if cb changes before animation finishes, cache it here
+        // this could e.g. happen if we start a new animation
+        this._animCb = this.opts.callback;
+
+        this._onTransitionEnd = (()=>{
+            this.stop();
+        }).bind(this);
+
         // in case transitionend isn't called (element is removed, etc.)
         // use a timer fallback which is slightly delayed but avoids
         // missing callbacks
-        let _timerFallback = setTimeout(()=>{
-            this.clean()
-                .finish();
-        }, this.opts.duration + 100);
+        this._timerFallback = setTimeout(this._onTransitionEnd, this.opts.duration + 100);
         // wait for transitionend
-        this.elm.addEventListener("transitionend", ()=>{
-            clearTimeout(_timerFallback);
-            this.clean()
-                .finish();
-        });
+        this.elm.addEventListener("transitionend", this._onTransitionEnd);
 
+        return this;
+    }
+
+    /**
+     * Stops an in-progress animation
+     */
+    stop() {
+        clearTimeout(this._timerFallback);
+        this.elm.removeEventListener("transitionend", this._onTransitionEnd);
+        this.clean()
+            .finish();
         return this;
     }
 
@@ -145,20 +186,28 @@ export default class FLIPElement {
                                   this.opts.scalingClass);
         this.elm.style.opacity = this._style.opacity;
         this.elm.style.transition = this._style.transition;
-        this.elm.style.transform = this._style.transform;
         this.elm.style.transformOrigin = this._style.transformOrigin;
         this.elm.style.willChange = this._style.willChange;
+
+        // Firefox keeps playing playing a transition after it's removed
+        // To stop this, we change transform, reflow and then set it to what we want
+        this.elm.style.transform = this._style.transform ?
+                                    "" : "translateX(10px)";
+        this.elm.offsetHeight;
+        this.elm.style.transform  = this._style.transform;
 
         return this;
     }
 
     /**
      * Called when the animation is finished
+     * @param {Function} [callback]
      */
     finish() {
         this._playing = false;        
-        if (this.opts.callback) {
-            this.opts.callback();
+        if (this._animCb) {
+            this._animCb();
+            this._animCb = null;
         }
     }
 

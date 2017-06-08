@@ -1,3 +1,5 @@
+"use strict";
+
 /**
  * Gets a snapshot of an element
  * Returns an object with format
