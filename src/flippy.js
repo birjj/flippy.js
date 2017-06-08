@@ -7,7 +7,8 @@
  */
 
 "use strict";
-import FLIPElement from "./element";
+// cannot use import/export because of webpack/webpack#706
+const FLIPElement = require("./element.js").default;
 
 /**
  * Animates DOM changes on specified elements
@@ -24,7 +25,7 @@ import FLIPElement from "./element";
  * @return {Promise<Array<Element>>}    A Promise which resolves once animation 
  *                                      is done.
  */
-export default function flip(elms, modifier, options={}){
+module.exports = function flip(elms, modifier, options={}){
     if (!elms || (typeof elms !== "string"
                   && !(elms instanceof Array)
                   && !(elms instanceof HTMLElement))) {
@@ -82,5 +83,5 @@ export default function flip(elms, modifier, options={}){
 
     // return a Promise
     return finalPromise;
-}
-flip.FLIPElement = FLIPElement;
+};
+module.exports.FLIPElement = FLIPElement;
