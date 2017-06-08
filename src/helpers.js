@@ -73,6 +73,5 @@ export function getClientRect(elm) {
  */
 export function getTransitionString(options) {
     let dur = options.duration/1000;
-    return `transform ${dur.toFixed(2)}s ${options.ease},
-            opacity ${dur.toFixed(2)}s ${options.ease}`;
+    return `transform ${dur.toFixed(2)}s ${options.ease}`;
 }

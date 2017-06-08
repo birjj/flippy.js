@@ -69,7 +69,6 @@ export default class FLIPElement {
         this.debug("last", this._last);
 
         // save old styles for when we remove flip
-        this._style.opacity = this.elm.style.opacity;
         this._style.willChange = this.elm.style.willChange;
         this._style.transform = this.elm.style.transform;
         this._style.transformOrigin = this.elm.style.transformOrigin;
@@ -102,8 +101,7 @@ export default class FLIPElement {
             `translate(${delta.left.toFixed(2)}px, ${delta.top.toFixed(2)}px)
              ${this._first.transform}
              scale(${delta.width.toFixed(2)}, ${delta.height.toFixed(2)})`;
-        this.elm.style.opacity = this._first.opacity;
-        this.elm.style.willChange = "transform,opacity";
+        this.elm.style.willChange = "transform";
 
         this.debug("invert",this.elm.style.transform);
 
@@ -123,8 +121,7 @@ export default class FLIPElement {
         if (Math.abs(this._first.left - this._last.left) <= 1
          && Math.abs(this._first.top - this._last.top) <= 1
          && Math.abs(this._first.width - this._last.width) <= 1
-         && Math.abs(this._first.height - this._last.height) <= 1
-         && Math.abs(this._first.opacity - this._last.opacity) <= 0.05) {
+         && Math.abs(this._first.height - this._last.height) <= 1) {
             this.debug("Ending early because of no change");
             this._animCb = this.opts.callback;
             this.stop();
@@ -132,7 +129,10 @@ export default class FLIPElement {
         }
 
         this.elm.offsetHeight; // force reflow
-        this.elm.style.transition = getTransitionString(this.opts);
+        this.elm.style.transition = [
+            this._style.transition,
+            `transform ${(this.opts.duration/1000).toFixed(2)}s ${this.opts.ease}`
+        ].filter(Boolean).join(", ");
         this.elm.offsetHeight; // force reflow
 
         // add our animation classes
@@ -143,7 +143,6 @@ export default class FLIPElement {
         }
 
         // animate to end position
-        this.elm.style.opacity = this._last.opacity;
         this.elm.style.transform = this._last.transform;
 
         // if cb changes before animation finishes, cache it here
@@ -184,7 +183,6 @@ export default class FLIPElement {
 
         this.elm.classList.remove(this.opts.animatingClass,
                                   this.opts.scalingClass);
-        this.elm.style.opacity = this._style.opacity;
         this.elm.style.transition = this._style.transition;
         this.elm.style.transformOrigin = this._style.transformOrigin;
         this.elm.style.willChange = this._style.willChange;

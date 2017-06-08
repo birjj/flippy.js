@@ -409,5 +409,19 @@ describe("FLIPElement", function() {
                 .play();
             
         });
+
+        it("should respect existing transition", function(){
+            let elm = helpers.createTestElement();
+            let $elm = new FLIPElement(elm);
+            elm.style.transition = "opacity 0.5s";
+            let _transition = elm.style.transition;
+            $elm.first();
+            elm.style.left = elm.style.top = "100px";
+            $elm.last()
+                .invert()
+                .play();
+            
+            expect(elm.style.transition).to.include(_transition);
+        });
     });
 });
