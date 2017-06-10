@@ -54,13 +54,21 @@ export function getClientRect(elm) {
         left: elm.offsetLeft,
         top: elm.offsetTop
     };
+    let _isFixed = window.getComputedStyle(elm).position === "fixed";
 
     // offsetLeft/-Top relates to the offsetParent
     // we want it to relate to the window
     while ((elm = elm.offsetParent) && elm !== document.body
                                     && elm !== document.documentElement) {
-        rect.left += elm.scrollLeft;
-        rect.top += elm.scrollTop;
+        rect.left += elm.offsetLeft;
+        rect.top += elm.offsetTop;
+    }
+
+    // fixed elements have .offsetParent === body
+    if (_isFixed) {
+        let doc = document.documentElement;
+        rect.left += (window.pageXOffset || doc.scrollLeft) - (doc.clientLeft || 0);
+        rect.top += (window.pageYOffset || doc.scrollTop)  - (doc.clientTop || 0);
     }
 
     return rect;
