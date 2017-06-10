@@ -6,7 +6,6 @@
  * {
  *   left: <Number>, top: <Number>,
  *   width: <Number>, height: <Number>,
- *   opacity: <Number>,
  *   transform: <String>
  * }
  */
@@ -19,7 +18,6 @@ export function getSnapshot(elm) {
         width: pos.width,
         height: pos.height,
         
-        opacity: parseFloat(styles.opacity),
         transform: styles.transform === "none" || !styles.transform ?
                         "" : styles.transform
     };
