@@ -6,7 +6,6 @@
  * {
  *   left: <Number>, top: <Number>,
  *   width: <Number>, height: <Number>,
- *   opacity: <Number>,
  *   transform: <String>
  * }
  */
@@ -19,7 +18,6 @@ export function getSnapshot(elm) {
         width: pos.width,
         height: pos.height,
         
-        opacity: parseFloat(styles.opacity),
         transform: styles.transform === "none" || !styles.transform ?
                         "" : styles.transform
     };
@@ -56,13 +54,21 @@ export function getClientRect(elm) {
         left: elm.offsetLeft,
         top: elm.offsetTop
     };
+    let _isFixed = window.getComputedStyle(elm).position === "fixed";
 
     // offsetLeft/-Top relates to the offsetParent
     // we want it to relate to the window
     while ((elm = elm.offsetParent) && elm !== document.body
                                     && elm !== document.documentElement) {
-        rect.left += elm.scrollLeft;
-        rect.top += elm.scrollTop;
+        rect.left += elm.offsetLeft;
+        rect.top += elm.offsetTop;
+    }
+
+    // fixed elements have .offsetParent === body
+    if (_isFixed) {
+        let doc = document.documentElement;
+        rect.left += (window.pageXOffset || doc.scrollLeft) - (doc.clientLeft || 0);
+        rect.top += (window.pageYOffset || doc.scrollTop)  - (doc.clientTop || 0);
     }
 
     return rect;

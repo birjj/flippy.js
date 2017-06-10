@@ -6,7 +6,7 @@ It is exported as a UMD library, supporting both AMD, CommonJS and basic `<scrip
 ## Usage
 Flippy.js exposes the function `flip(elements, modifier, [options])`. Pass it the elements you want to animate, a function which should modify the DOM when called, and an optional options object. It returns a `Promise` which resolves when the animation is finished.
 
-For specifics, see our docs.
+For specifics, see [our docs](https://github.com/birjolaxew/flippy.js/wiki/Usage).
 
 Here's a quick example:
 ```javascript
@@ -30,4 +30,4 @@ function generateNotification() { /* ... */ }
 
 Internally, FlippyJS uses a `FLIPElement` class to represent elements that are being animated. This class is exposed as `flip.FLIPElement`, should you wish to play around with it.
 
-More details at our docs.
+More details at [our docs](https://github.com/birjolaxew/flippy.js/wiki/Advanced-Usage).

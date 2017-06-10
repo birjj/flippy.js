@@ -9,11 +9,19 @@
   ],
   "author": "birjolaxew",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/birjolaxew/flippy.js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/birjolaxew/flippy.js/issues"
+  },
+  "homepage": "https://birjolaxew.github.io/flippy.js",
   "devDependencies": {
     "babel-core": "^6.24.1",
     "babel-loader": "^7.0.0",
     "babel-preset-env": "^1.5.1",
-    "chai": "^4.0.1",
+    "chai": "^4.0.2",
     "eslint": "^3.19.0",
     "karma": "^1.7.0",
     "karma-babel-preprocessor": "^6.0.1",
@@ -32,6 +40,8 @@
     "test": "karma start --single-run",
     "watchTest": "karma start",
     "start": "npm run watchTest",
-    "build": "webpack -p"
+    "build": "webpack -p",
+    "deploy": "mkdir pages || true && git fetch https://github.com/birjolaxew/flippy.js.git gh-pages || true && git --work-tree=./pages checkout FETCH_HEAD && rm -R pages/dist/ || true && cp -r dist/ pages/ && rm pages/deployed\\ at*",
+    "demo": "npm run build && git submodule add -b gh-pages $(git remote get-url origin) demo || true && cd demo && cp -r ../dist/* ./dist && jekyll serve --no-watch && cd .. && rm -R demo && rm .gitmodules"
   }
 }

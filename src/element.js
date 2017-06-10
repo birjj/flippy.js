@@ -1,5 +1,5 @@
 "use strict";
-import { getSnapshot, getDelta, getTransitionString } from "./helpers";
+import { getSnapshot, getDelta } from "./helpers";
 
 /** @type {Map<HTMLElement, FLIPElement>} */
 let elmMap = new Map();

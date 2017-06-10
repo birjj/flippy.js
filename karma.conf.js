@@ -16,6 +16,10 @@ module.exports = function(config) {
             "./test/**/*.spec.js": ["webpack"]
         },
 
+        webpackServer: {
+            quiet: true
+        },
+
         // test results reporter to use
         reporters: ["mocha"/*, "notify"*/],
 
