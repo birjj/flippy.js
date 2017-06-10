@@ -1,4 +1,4 @@
-# FlippyJS ![](https://travis-ci.org/birjolaxew/flippy.js.svg?branch=develop)
+# FlippyJS [![](https://travis-ci.org/birjolaxew/flippy.js.svg?branch=develop)](https://travis-ci.org/birjolaxew/flippy.js)
 FlippyJS is a helper library for [FLIP animations](https://aerotwist.com/blog/flip-your-animations/) - it allows you to easily animate any changes you make to the DOM, without having to specify the animation manually. All animations are done using CSS animations.
 
 It is exported as a UMD library, supporting both AMD, CommonJS and basic `<script>` usage.
