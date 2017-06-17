@@ -72,10 +72,24 @@ module.exports = function flip(elms, modifier, options={}){
         return new FLIPElement(elm, options);
     });
 
-    // then FLIP
-    elms.forEach(elm=>elm.first());
-    modifier();
-    elms.forEach(elm=>elm.last().invert().play());
+    // ===
+    // FLIP elements
+    // ===
+    elms.forEach(elm=>elm.first()); // reflow: read
+    modifier(); // reflow: write
+    elms.forEach(elm=>elm.last()); // reflow: read
+    elms.forEach(elm=>elm.invert()); // reflow: write
+    elms = elms.map(elm=>{ // reflow: write
+        if (elm._playPart1() === false) {
+            options.callback();
+            return false;
+        }
+        return elm;
+    }).filter(Boolean);
+    document.body.offsetTop; // force reflow
+    elms.forEach(elm=>elm._applyTransition()); // reflow: write
+    document.body.offsetTop; // force reflow
+    elms.forEach(elm=>elm._playPart2());
 
     if (options.debug && console.groupCollapsed) {
         console.groupEnd();

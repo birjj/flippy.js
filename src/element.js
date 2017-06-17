@@ -112,29 +112,45 @@ export default class FLIPElement {
      * Plays back the animation
      */
     play() {
+        if (this._playPart1() === false) {
+            return this;
+        }
+
+        this.elm.offsetHeight;
+        this._applyTransition();
+        this.elm.offsetHeight;
+
+        this._playPart2();
+
+        return this;
+    }
+
+    /**
+     * Same as .play() up until the first reflow
+     * Useful if you're animating multiple elements
+     * @returns {Boolean} If false, play is stopped
+     */
+    _playPart1() {
         if (this._playing) {
             this.stop();
         }
         this._playing = true;
 
-        // if we're not moving at all, just end without playing
-        if (Math.abs(this._first.left - this._last.left) <= 1
-         && Math.abs(this._first.top - this._last.top) <= 1
-         && Math.abs(this._first.width - this._last.width) <= 1
-         && Math.abs(this._first.height - this._last.height) <= 1) {
+        if (!this._checkMoved()) {
             this.debug("Ending early because of no change");
             this._animCb = this.opts.callback;
             this.stop();
-            return this;
+            return false;
         }
+        return true;
+    }
 
-        this.elm.offsetHeight; // force reflow
-        this.elm.style.transition = [
-            this._style.transition,
-            `transform ${(this.opts.duration/1000).toFixed(2)}s ${this.opts.ease}`
-        ].filter(Boolean).join(", ");
-        this.elm.offsetHeight; // force reflow
-
+    /**
+     * Same as .play() after the last reflow
+     * Useful if you're animating multiple elements
+     * @returns {Boolean} If false, play is stopped
+     */
+    _playPart2() {
         // add our animation classes
         this.elm.classList.add(this.opts.animatingClass);
         if ((this._first.width !== this._last.width)
@@ -165,7 +181,32 @@ export default class FLIPElement {
         // wait for transitionend
         this.elm.addEventListener("transitionend", this._onTransitionEnd);
 
-        return this;
+        return true;
+    }
+
+    /**
+     * Check if we actually moved from first to last
+     */
+    _checkMoved() {
+        // if we're not moving at all, just end without playing
+        if (Math.abs(this._first.left - this._last.left) <= 1
+         && Math.abs(this._first.top - this._last.top) <= 1
+         && Math.abs(this._first.width - this._last.width) <= 1
+         && Math.abs(this._first.height - this._last.height) <= 1) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Applies our transition to the element
+     * Page should be reflowed before and after this is called
+     */
+    _applyTransition() {
+        this.elm.style.transition = [
+            this._style.transition,
+            `transform ${(this.opts.duration/1000).toFixed(2)}s ${this.opts.ease}`
+        ].filter(Boolean).join(", ");
     }
 
     /**
