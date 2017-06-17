@@ -149,14 +149,19 @@ export default class FLIPElement {
         // this could e.g. happen if we start a new animation
         this._animCb = this.opts.callback;
 
-        this._onTransitionEnd = (()=>{
-            this.stop();
+        this._onTransitionEnd = ((e)=>{
+            if (e.propertyName === "transform") {
+                this.stop();
+            }
         }).bind(this);
 
         // in case transitionend isn't called (element is removed, etc.)
         // use a timer fallback which is slightly delayed but avoids
         // missing callbacks
-        this._timerFallback = setTimeout(this._onTransitionEnd, this.opts.duration + 100);
+        this._timerFallback = setTimeout(
+            ()=>this._onTransitionEnd({propertyName: "transform"}),
+            this.opts.duration + 100
+        );
         // wait for transitionend
         this.elm.addEventListener("transitionend", this._onTransitionEnd);
 
