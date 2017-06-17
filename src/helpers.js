@@ -75,9 +75,10 @@ export function getClientRect(elm) {
 }
 
 /**
- * Turns an option object into a transition string
+ * Get the applied transition from an element
+ * @returns {String}
  */
-export function getTransitionString(options) {
-    let dur = options.duration/1000;
-    return `transform ${dur.toFixed(2)}s ${options.ease}`;
+export function getTransitionFromElm(elm) {
+    let styles = window.getComputedStyle(elm);
+    return `${styles.transitionProperty} ${styles.transitionDuration} ${styles.transitionTimingFunction} ${styles.transitionDelay}`;
 }

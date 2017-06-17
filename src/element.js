@@ -1,5 +1,5 @@
 "use strict";
-import { getSnapshot, getDelta } from "./helpers";
+import { getSnapshot, getDelta, getTransitionFromElm } from "./helpers";
 
 /** @type {Map<HTMLElement, FLIPElement>} */
 let elmMap = new Map();
@@ -72,7 +72,7 @@ export default class FLIPElement {
         this._style.willChange = this.elm.style.willChange;
         this._style.transform = this.elm.style.transform;
         this._style.transformOrigin = this.elm.style.transformOrigin;
-        this._style.transition = this.elm.style.transition;
+        this._style.transition = getTransitionFromElm(this.elm);
 
         for (let k in this._style) {
             let style = this._style[k];

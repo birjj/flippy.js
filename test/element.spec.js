@@ -103,7 +103,6 @@ describe("FLIPElement", function() {
             });
             $elm.first();
             elm.style.top = elm.style.width = "100px";
-            let pre = elm.getBoundingClientRect();
             $elm.last()
                 .invert()
                 .play();
@@ -413,15 +412,20 @@ describe("FLIPElement", function() {
         it("should respect existing transition", function(){
             let elm = helpers.createTestElement();
             let $elm = new FLIPElement(elm);
-            elm.style.transition = "opacity 0.5s";
-            let _transition = elm.style.transition;
+            elm.classList.add("transition-opacity");
+            let style = document.createElement("style");
+            style.textContent = `
+            .transition-opacity {
+                transition: opacity .5s linear;
+            }`;
+            document.head.appendChild(style);
             $elm.first();
             elm.style.left = elm.style.top = "100px";
             $elm.last()
                 .invert()
                 .play();
             
-            expect(elm.style.transition).to.include(_transition);
+            expect(elm.style.transition).to.match(/opacity 0?.5s linear/);
         });
     });
 });
