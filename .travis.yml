@@ -16,9 +16,14 @@ after_success:
   - npm run build
   - npm run deploy
 deploy:
-  provider: pages
-  skip_cleanup: true
-  github_token: $GITHUB_TOKEN
-  local_dir: pages
-  on:
-    branch: master
+  - provider: pages
+    skip_cleanup: true
+    github_token: $GITHUB_TOKEN
+    local_dir: pages
+    on:
+      branch: master
+  - provider: npm
+    api_key: $NPM_TOKEN
+    on:
+      branch: master
+      tags: true
