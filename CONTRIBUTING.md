@@ -1,6 +1,6 @@
 # Issues
 
-If you have found a bug in the library, feel free to open an issue. It'd ease the work significantly if you include a JSFiddle or similar of the problem, so the problem can be reproduced.
+If you have found a bug in the library, feel free to open an issue. It'd ease the work significantly if you include a JSFiddle or similar of the problem, so the problem can be reproduced. Base your JSFiddle on [this template](https://jsfiddle.net/gpejp0d4/).
 
 # Pull requests
 

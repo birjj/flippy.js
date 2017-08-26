@@ -33,13 +33,15 @@ export default class FLIPElement {
      * @param {String} [options.ease="ease"] CSS timing function to use for easing
      * @param {String} [options.animatingClass="flip-animating"] Class to apply when animating
      * @param {String} [options.scalingClass="flip-scaling"] Class to apply when scaling
+     * @param {Boolean} [options.useScale=true] Whether we should animate width/height changes by scaling
      */
     setOptions(options) {
         this.opts = Object.assign({}, {
             duration: 400,
             ease: "ease",
             animatingClass: "flip-animating",
-            scalingClass: "flip-scaling"
+            scalingClass: "flip-scaling",
+            useScale: true,
         }, this.opts, options);
     }
 
@@ -51,7 +53,7 @@ export default class FLIPElement {
         if (this._playing) {
             this.stop();
         }
-        this._first = getSnapshot(this.elm);
+        this._first = getSnapshot(this.elm, this.opts.useScale);
         this.debug("first", this._first);
 
         return this;
@@ -65,7 +67,7 @@ export default class FLIPElement {
         if (!this._first) {
             throw new Error(".first() must be called before .last()");
         }
-        this._last = getSnapshot(this.elm);
+        this._last = getSnapshot(this.elm, this.opts.useScale);
         this.debug("last", this._last);
 
         // save old styles for when we remove flip
@@ -73,6 +75,8 @@ export default class FLIPElement {
         this._style.transform = this.elm.style.transform;
         this._style.transformOrigin = this.elm.style.transformOrigin;
         this._style.transition = getTransitionFromElm(this.elm);
+        this._style.width = this.elm.style.width;
+        this._style.height = this.elm.style.height;
 
         for (let k in this._style) {
             let style = this._style[k];
@@ -91,17 +95,28 @@ export default class FLIPElement {
             throw new Error(".first() and .last() must be called before .invert()");
         }
 
-        let delta = getDelta(this._first, this._last);
-
+        const delta = getDelta(this._first, this._last);
+        const translation = `translate(${delta.left.toFixed(2)}px, ${delta.top.toFixed(2)}px)`;
+        const scaling = this.opts.useScale
+            ? `scale(${delta.width.toFixed(2)}, ${delta.height.toFixed(2)})`
+            : "";
+        
         this.elm.style.transformOrigin = "50% 50%";
         // if the original transform contains rotates, we need to move first
         // (so it moves along the non-rotated axis) and scale last (so it scales
         // along the rotated axis)
-        this.elm.style.transform =
-            `translate(${delta.left.toFixed(2)}px, ${delta.top.toFixed(2)}px)
-             ${this._first.transform}
-             scale(${delta.width.toFixed(2)}, ${delta.height.toFixed(2)})`;
+        this.elm.style.transform = [
+            translation,
+            this._first.transform,
+            scaling
+        ].join(" ");
         this.elm.style.willChange = "transform";
+
+        // If we shouldn't scale, we should animate width/height instead
+        if (!this.opts.useScale) {
+            this.elm.style.width = `${this._first.width.toFixed(2)}px`;
+            this.elm.style.height = `${this._first.height.toFixed(2)}px`;
+        }
 
         this.debug("invert",this.elm.style.transform);
 
@@ -160,22 +175,30 @@ export default class FLIPElement {
 
         // animate to end position
         this.elm.style.transform = this._last.transform;
+        if (!this.opts.useScale) {
+            this.elm.style.width = `${this._last.width.toFixed(2)}px`;
+            this.elm.style.height = `${this._last.height.toFixed(2)}px`;
+        }
 
         // if cb changes before animation finishes, cache it here
         // this could e.g. happen if we start a new animation
         this._animCb = this.opts.callback;
 
-        this._onTransitionEnd = ((e)=>{
-            if (e.propertyName === "transform") {
+        this._onTransitionEnd = (e)=>{
+            if (e.target === this.elm
+                && e.propertyName === "transform") {
                 this.stop();
             }
-        }).bind(this);
+        };
 
         // in case transitionend isn't called (element is removed, etc.)
         // use a timer fallback which is slightly delayed but avoids
         // missing callbacks
         this._timerFallback = setTimeout(
-            ()=>this._onTransitionEnd({propertyName: "transform"}),
+            ()=>this._onTransitionEnd({
+                target: this.elm,
+                propertyName: "transform"
+            }),
             this.opts.duration + 100
         );
         // wait for transitionend
@@ -203,9 +226,12 @@ export default class FLIPElement {
      * Page should be reflowed before and after this is called
      */
     _applyTransition() {
+        const duration = (this.opts.duration/1000).toFixed(2);
         this.elm.style.transition = [
             this._style.transition,
-            `transform ${(this.opts.duration/1000).toFixed(2)}s ${this.opts.ease}`
+            `transform ${duration}s ${this.opts.ease}`,
+            !this.opts.useScale ? `width ${duration}s ${this.opts.ease}` : "",
+            !this.opts.useScale ? `height ${duration}s ${this.opts.ease}` : "",
         ].filter(Boolean).join(", ");
     }
 
@@ -232,6 +258,8 @@ export default class FLIPElement {
         this.elm.style.transition = this._style.transition;
         this.elm.style.transformOrigin = this._style.transformOrigin;
         this.elm.style.willChange = this._style.willChange;
+        this.elm.style.width = this._style.width;
+        this.elm.style.height = this._style.height;
 
         // Firefox keeps playing playing a transition after it's removed
         // To stop this, we change transform, reflow and then set it to what we want
