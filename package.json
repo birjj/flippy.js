@@ -42,6 +42,6 @@
     "start": "npm run watchTest",
     "build": "webpack -p",
     "deploy": "mkdir pages || true && git fetch https://github.com/birjolaxew/flippy.js.git gh-pages || true && git --work-tree=./pages checkout FETCH_HEAD && rm -R pages/dist/ || true && cp -r dist/ pages/ && rm pages/deployed\\ at*",
-    "demo": "npm run build && git submodule add -b gh-pages $(git remote get-url origin) demo || true && cd demo && cp -r ../dist/* ./dist && bundle exec jekyll serve --no-watch && cd .. && rm -R demo && rm .gitmodules && rm -Rf .git/modules/demo && git add .gitmodules demo"
+    "demo": "npm run build && git submodule add -b gh-pages $(git remote get-url origin) demo || true && cd demo && cp -r ../dist/* ./dist && bundle exec jekyll serve --no-watch && cd .. && rm -R demo && rm -R _site && rm .gitmodules && rm -Rf .git/modules/demo && git add .gitmodules demo"
   }
 }
