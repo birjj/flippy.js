@@ -280,28 +280,58 @@ describe("FLIPElement", function() {
 
     describe(".play()", function() {
         it("should animate", function(done) {
-            let elm = helpers.createTestElement();
-            let $elm = new FLIPElement(elm, {duration: 400});
-            let pre = elm.getBoundingClientRect();
+            function testElm(elm, $elm, cb, id) {
+                const pre = elm.getBoundingClientRect();
+                $elm.first();
+                elm.style.left =
+                    elm.style.top =
+                    elm.style.height =
+                    elm.style.width = "100px";
+                const post = elm.getBoundingClientRect();
+                $elm.last()
+                    .invert()
+                    .play();
+                setTimeout(()=>{
+                    const mid = elm.getBoundingClientRect();
+                    for (let k in mid) {
+                        expect(pre[k]-mid[k], `${id} - pre.${k}: ${pre[k]}=>${mid[k]}`)
+                            .to.not.be.within(-1,1);
+                        expect(post[k]-mid[k], `${id} - post.${k}: ${post[k]}=>${mid[k]}`)
+                            .to.not.be.within(-1,1);
+                    }
+                    cb();
+                }, 200);
+            }
+            const elm = helpers.createTestElement();
+            const $elm = new FLIPElement(elm, {duration: 400});
+            const elmNoScale = helpers.createTestElement();
+            const $elmNoScale = new FLIPElement(elmNoScale, {
+                duration: 400,
+                useScale: false
+            });
+            
+            let cbTimes = 0;
+            const cb = () => {if (++cbTimes >= 2) { done(); }};
+            testElm(elm, $elm, cb, "normal");
+            testElm(elmNoScale, $elmNoScale, cb, "no scale");
+        });
+        it("should animate width if not using scale", function() {
+            const elm = helpers.createTestElement();
+            const $elm = new FLIPElement(elm, {
+                duration: 400,
+                useScale: false
+            });
             $elm.first();
-            elm.style.left = 
-                elm.style.top =
-                elm.style.height =
-                elm.style.width = "100px";
-            let post = elm.getBoundingClientRect();
+            elm.style.width = "100px";
+            elm.style.height = "100px";
             $elm.last()
-                .invert()
-                .play();
-            setTimeout(()=>{
-                let mid = elm.getBoundingClientRect();
-                for (let k in mid) {
-                    expect(pre[k]-mid[k], `pre.${k}: ${pre[k]}=>${mid[k]}`)
-                        .to.not.be.within(-1,1);
-                    expect(post[k]-mid[k], `post.${k}: ${post[k]}=>${mid[k]}`)
-                        .to.not.be.within(-1,1);
-                }
-                done();
-            }, 200);
+                .invert();
+            expect(elm.style.width).to.equal("50px");
+            expect(elm.style.height).to.equal("50px");
+            $elm.play();
+            const transition = elm.style.transition;
+            expect(transition).to.include("width");
+            expect(transition).to.include("height");
         });
         it("should end immediately if there is no change", function(done) {
             let t = performance.now();

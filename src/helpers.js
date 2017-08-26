@@ -9,12 +9,12 @@
  *   transform: <String>
  * }
  */
-export function getSnapshot(elm) {
+export function getSnapshot(elm, fromCenter) {
     let pos = getClientRect(elm);
     let styles = window.getComputedStyle(elm);
     return { // positions are related to center
-        left: pos.left + pos.width/2,
-        top: pos.top + pos.height/2,
+        left: pos.left + (fromCenter ? pos.width/2 : 0),
+        top: pos.top + (fromCenter ? pos.height/2 : 0),
         width: pos.width,
         height: pos.height,
         
