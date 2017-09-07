@@ -2,7 +2,7 @@
   "name": "flippy.js",
   "version": "1.0.2",
   "description": "FLIP animation helper; animate DOM changes with ease",
-  "main": "dist/flippy.js",
+  "main": "dist/flippy.bundle.js",
   "keywords": [
     "flip",
     "animation"

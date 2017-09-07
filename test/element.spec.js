@@ -2,6 +2,12 @@ import { expect } from "chai";
 import FLIPElement from "../src/element";
 import * as helpers from "./test-helpers";
 
+const RECT_KEYS = [
+    "x", "y",
+    "left", "right", "top", "bottom",
+    "width", "height"
+];
+
 describe("FLIPElement", function() {
     it("should only allow 1 instance per HTMLElement", function(){
         let elm = helpers.createTestElement();
@@ -84,10 +90,12 @@ describe("FLIPElement", function() {
                     .play();
 
                 let post = elm.getBoundingClientRect();
-                for (let k in pre) {
-                    expect(pre[k]-post[k], `${k}: ${pre[k]}=>${post[k]}`)
-                        .to.be.within(-1,1);
-                }
+                RECT_KEYS.forEach(
+                    k => {
+                        expect(pre[k]-post[k], `${k}: ${pre[k]}=>${post[k]}`)
+                            .to.be.within(-1,1);
+                    }
+                );
 
                 done();
             }, 200);
@@ -239,16 +247,29 @@ describe("FLIPElement", function() {
                 let state = states[i];
 
                 data = invertTest(base, state);
-                for (let k in data.pre) {
-                    let delta = data.post[k]-data.pre[k];
-                    expect(delta).to.be.within(-1,1, `Invert state ${i}-${k}\n${helpers.rectToString(data.pre)}=>${helpers.rectToString(data.post)}`);
-                }
 
+                const keys = [
+                    "x", "y",
+                    "left", "right", "top", "bottom",
+                    "width", "height"
+                ];
+                
+                // test from base to state
+                RECT_KEYS.forEach(
+                    k => {
+                        let delta = data.post[k]-data.pre[k];
+                        expect(delta).to.be.within(-1,1, `Invert state ${i}-${k}\n${helpers.rectToString(data.pre)}=>${helpers.rectToString(data.post)}`);
+                    }
+                );
+
+                // test from state to base
                 data = invertTest(state, base);
-                for (let k in data.pre) {
-                    let delta = data.post[k]-data.pre[k];
-                    expect(delta).to.be.within(-1,1, `Invert state ${i}r-${k}\n${helpers.rectToString(data.pre)}=>${helpers.rectToString(data.post)}`);
-                }
+                RECT_KEYS.forEach(
+                    k => {
+                        let delta = data.post[k]-data.pre[k];
+                        expect(delta).to.be.within(-1,1, `Invert state ${i}r-${k}\n${helpers.rectToString(data.pre)}=>${helpers.rectToString(data.post)}`);
+                    }
+                )
             }
         }
         function invertTest(pre,modify) {
