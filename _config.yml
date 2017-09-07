@@ -1,0 +1,30 @@
+# Site settings
+# These are used to personalize your new site. If you look in the HTML files,
+# you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
+# You can create any custom variable you would like, and they will be accessible
+# in the templates via {{ site.myvariable }}.
+title: FlippyJS
+email: johanringmann@gmail.com
+description: > # this means to ignore newlines until "baseurl:"
+  Animate DOM changes with ease. 
+  FlippyJS is a helper library for FLIP animations, letting 
+  you easily animate any changes to the DOM, without having 
+  to specify the animation manually.
+baseurl: /flippy.js # the subpath of your site, e.g. /blog
+url: https://birjolaxew.github.io
+google_analytics: UA-100751516-1
+github_link: https://github.com/birjolaxew/flippy.js
+library_name: FlippyJS
+
+# Build settings
+markdown: kramdown
+gems:
+  - jekyll-feed
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+sass:
+  sass_dir: assets/styles
+collections:
+  - demos

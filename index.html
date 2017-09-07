@@ -1,0 +1,37 @@
+---
+layout: default
+---
+
+{% capture cont %}
+FlippyJS is a helper library for [FLIP animations](https://aerotwist.com/blog/flip-your-animations/) - it allows you to easily animate any changes you make to the DOM, without having to specify the animation manually. All animations are done using CSS animations.
+
+It is exposed as a UMD library, supporting AMD, CommonJS and &lt;script&gt; usage.
+
+## Usage
+
+Using FlippyJS is simple: all you need to do is call the <a href="{{ site.github_link }}/wiki/Usage" target="_new">`flip(...)`</a> function. 
+It takes up to three parameters: the elements to animate, a function which should alter the DOM, and an optional [options object](#options).
+
+## Demos
+
+Several demos are available from <a href="{{ "demos" | relative_url }}" target="_new">the demos page</a>.  
+Here's a small example for those pressed on time:
+{% endcapture %}
+{{ cont | markdownify }}
+
+{% for demo in site.demos %}
+{% if demo.title == "Flexbox columns" %}
+{{ demo.output }}
+{% endif %}
+{% endfor %}
+
+{% capture cont %}
+## Options
+
+The optional third parameter to `flip(...)` is an options object. This can have the following keys:
+
+```javascript
+{% include options.js %}
+```
+{% endcapture %}
+{{ cont | markdownify }}

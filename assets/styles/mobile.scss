@@ -1,0 +1,14 @@
+@media (max-width: 912px) {
+    html {
+        font-size: 16px;
+    }
+    .demo {
+        flex-direction: column;
+        &--content, &--source {
+            width: auto;
+        }
+    }
+    .container:first-child {
+        margin-top: 0;
+    }
+}

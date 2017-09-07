@@ -1,0 +1,33 @@
+---
+title: Demos
+layout: default
+---
+{% capture cont %}
+Ever wished you had an easy way to animate when you move an element from one place in the DOM to another?  
+Ever wanted to move other elements out of the way smoothly when you add a new one?  
+FlippyJS lets you animate DOM changes in the easiest way possible: give it some elements to animate, then change the DOM however you want, and FlippyJS will figure out the rest.
+
+If you'd like to see how the below demos look without using FlippyJS, simply toggle this checkbox:
+
+<div class="checkbox">
+    <label for="flip-toggle">
+        <input id="flip-toggle" type="checkbox" checked="checked" />
+        <div class="checkbox--check">
+            {% include checkbox.svg %}
+        </div>
+         <label for="flip-toggle">Use FLIP animations</label>
+    </label>
+</div>
+{% endcapture %}
+{{ cont | markdownify }}
+
+{% assign demos = site.demos | sort: 'index' %}
+{% for demo in demos %}
+<h3>{{ demo.title }}</h3>
+
+{% if demo.description %}
+{{ demo.description | markdownify }}
+
+{% endif %}
+{{ demo.output }}
+{% endfor %}

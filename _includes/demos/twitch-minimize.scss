@@ -1,0 +1,18 @@
+.minimizable {
+    cursor: pointer;
+
+    &.minimized {
+        width: 150px;
+        position: fixed;
+        bottom: 10px;
+        left: 10px;
+    }
+}
+
+#twitch-minimize-video-placeholder {
+    display: none;
+
+    .minimized + & {
+        display: block;
+    }
+}

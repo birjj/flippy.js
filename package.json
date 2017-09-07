@@ -1,0 +1,29 @@
+{
+  "name": "flippy.js",
+  "version": "1.0.0",
+  "description": "The GitHub page for FlippyJS. Created using Jekyll.",
+  "main": "index.html",
+  "scripts": {
+    "start": "npm run buildWatch && npm run jekyll",
+    "build": "npm run buildScripts && npm run buildDemos",
+    "buildWatch": "npm run buildScriptsWatch & npm run buildDemosWatch &",
+    "buildScripts": "babel scripts --out-dir assets/scripts",
+    "buildScriptsWatch": "babel scripts --out-dir assets/scripts --watch",
+    "buildDemos": "babel _includes/demos --out-dir _includes/demos_build",
+    "buildDemosWatch": "babel _includes/demos --out-dir _includes/demos_build --watch",
+    "jekyll": "bundler exec jekyll serve"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/birjolaxew/flippy.js.git"
+  },
+  "author": "birjolaxew",
+  "bugs": {
+    "url": "https://github.com/birjolaxew/flippy.js/issues"
+  },
+  "homepage": "https://github.com/birjolaxew/flippy.js#readme",
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-env": "^2.4.1"
+  }
+}

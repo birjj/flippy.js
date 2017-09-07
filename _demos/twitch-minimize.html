@@ -1,0 +1,28 @@
+---
+layout: demo
+title: Twitch-style minimize
+index: 2
+description: |
+    You might have seen this kind of animation on YouTube or Twitch.  
+    A video is moved from its position in the normal flow of the page to a fixed position.
+
+    Since FlippyJS uses transforms to animate, the video will continue playing as it's moved.
+style: demos/twitch-minimize.scss
+script: demos/twitch-minimize.js
+---
+<video autoplay loop muted
+    id="twitch-minimize-video"
+    class="minimizable"
+    src="{{ "/assets/video/train.mp4" | relative_url }}">
+    Your browser doesn't seem to support videos :(
+</video>
+<div id="twitch-minimize-video-placeholder" class="placeholder"></div>
+
+<p class="placeholder">
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+</p>

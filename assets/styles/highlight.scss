@@ -1,0 +1,129 @@
+/* Pygments Railscast */
+/* https://jakoblaegdsmand.com/en/blog/rouge-railscasts-theme-in-css/ */
+/* Slightly modified by Birjolaxew */
+$railscasts-color                         : #E6E1DC;
+$railscasts-bg-color                      : #232323;
+
+$railscasts-gutter-color                  : #858179;
+$railscasts-gutter-bg-color               : #45433E;
+$railscasts-gutter-divider-color          : #75715E;
+
+$railscasts-comment-color                 : #BC9458;
+$railscasts-comment-font-style            : italic;
+
+$railscasts-keyword-color                 : #CC7833;
+$railscasts-function-color                : #FFC66D;
+$railscasts-class-color                   : #FFFFFF;
+$railscasts-numeric-color                 : #A5C261;
+$railscasts-variable-color                : #D0D0FF;
+$railscasts-constant-color                : #6D9CBE;
+$railscasts-constant-other-variable-color : #DA4939;
+$railscasts-constant-builtin-color        : #6E9CBE;
+$railscasts-constant-color                : #6D9CBE;
+$railscasts-string-color                  : #A5C261;
+$railscasts-library-function-color        : #DA4939;
+$railscasts-library-type-color            : #6E9CBE;
+$railscasts-library-constant-color        : #A5C261;
+$railscasts-markup-tag-color              : #E8BF6A;
+$railscasts-string-interpolation-color    : #519F50;
+
+$railscasts-diff-add-color                : #E6E1DC;
+$railscasts-diff-add-bg-color             : #144212;
+
+$railscasts-diff-remove-color             : #E6E1DC;
+$railscasts-diff-remove-bg-color          : #660000;
+
+$railscasts-diff-header                   : #2F33AB;
+
+.highlight {
+  position: relative;
+  background-color: #232323;
+  margin-bottom: 20px;
+  padding: 1em;
+  overflow-x: auto;
+  font-size: 14px;
+  color: $railscasts-color;
+  border: none;  
+  code {
+    word-wrap: normal;
+    white-space: pre;
+    overflow-x: auto;
+  }
+
+  .gd {
+    color: $railscasts-diff-remove-color;
+    background-color: $railscasts-diff-remove-bg-color;
+  }
+  .gi {
+    color: $railscasts-diff-add-color;
+    background-color: $railscasts-diff-add-bg-color;
+  }
+  .c, .cm, .c1, .c2 {
+    color: $railscasts-comment-color;
+    font-style: $railscasts-comment-font-style;
+  }
+  .s1, .s2, .s, .sr {
+    color: $railscasts-string-color;
+  }
+  .nv {
+    color: $railscasts-variable-color;
+  }
+  .k, .o, .kp {
+    color: $railscasts-keyword-color;
+  }
+  .mi {
+    color: $railscasts-numeric-color;
+  }
+  .ss {
+    color: $railscasts-library-type-color;
+  }
+  .si {
+    color: $railscasts-string-interpolation-color;
+  }
+  .vi {
+    color: $railscasts-variable-color;
+  }  
+  /*.p {
+    color: $railscasts-keyword-color;
+  }*/
+  .m {
+    color: $railscasts-numeric-color
+  }
+  .nb {
+    color: $railscasts-string-color;
+  } 
+  .mh {
+    color: $railscasts-variable-color;
+  }
+  .nl {
+    color: $railscasts-library-type-color;
+  }  
+  .nt, .nc, .na {
+    color: $railscasts-color;
+  }
+  .na { color: $railscasts-markup-tag-color; }
+  .kc, .kd, .kr, .kt {
+    color: $railscasts-keyword-color;
+  }
+}
+
+/* line numbers support */
+figure.highlight {
+  overflow: auto;
+  max-height: 1024px;
+
+  > pre {
+    margin: -1em;
+
+    td pre { margin: 0; }
+  }
+  .gutter {
+    box-sizing: content-box;
+    min-width: 2ch;
+    padding: 1em 0.5em 1em 1em;
+    color: $railscasts-gutter-color;
+  }
+  .code {
+    padding: 1em;
+  }
+}

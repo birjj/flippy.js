@@ -1,0 +1,36 @@
+</div>
+<div class="demo">
+    <div class="demo--content {{ page.title | slugify }}">
+        {{ content }}
+    </div>
+    <div class="demo--source">
+        <ul class="demo--tabs tabs">
+            <li tab-target=".demo--source_html">HTML</li><li
+            {% if page.style %}
+                tab-target=".demo--source_scss">SCSS</li><li
+            {% endif %}
+                tab-target=".demo--source_js" tab-active>JS</li>
+        </ul>
+        <div class="demo--source_html">
+            {% highlight html linenos %}{{ content | strip }}{% endhighlight %}
+        </div>
+        {% if page.style %}
+        <div class="demo--source_scss">
+            {% highlight scss linenos %}{% include {{ page.style }} %}{% endhighlight %}
+        </div>
+        {% endif %}
+        <div class="demo--source_js">
+            {% highlight js linenos %}{% include {{ page.script }} %}{% endhighlight %}
+        </div>
+    </div>
+    {% if page.style %}        
+    <style>
+        {% capture style %}{% include {{ page.style }} %}{% endcapture %}
+        {{ style | scssify }}
+    </style>
+    {% endif %}
+    <script>
+        {% include {{ page.script | replace:"demos/","demos_build/" }} %}
+    </script>
+</div>
+<div class="container">

@@ -1,0 +1,59 @@
+---
+---
+@import url(https://fonts.googleapis.com/css?family=Open+Sans|Raleway);
+
+$cBG: #fff;
+$cRED: #C53232;
+
+@import "highlight";
+@import "demos";
+@import "checkbox";
+@import "mobile";
+
+* { box-sizing: border-box; }
+html {
+    background: $cBG;
+    font-family: "Open Sans", sans-serif;
+    font-size: 20px;
+    line-height: 1.4;
+    color: #222;
+    overflow-x: hidden;
+}
+body, figure { margin: 0; }
+.container {
+    max-width: 768px;
+    margin: 2em auto;
+    padding: 1em;
+}
+
+h1, h2, h3 {
+    font-family: "Raleway", sans-serif;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 1em 0 0.5em;
+}
+p {
+    margin: 0 0 1em;
+
+    &:last-child { margin-bottom: 0; }
+}
+a {
+    color: $cRED;
+    font-weight: 700;
+    text-decoration: none;
+    transition: color 0.05s;
+
+    &:hover {
+        text-decoration: underline dashed;
+        color: #A51F1F;
+    }
+}
+footer {
+    text-align: center;
+}
+
+.fa {
+    font-size: 1.5em;
+    transform: translateY(0.1em);
+}
