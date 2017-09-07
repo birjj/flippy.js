@@ -1,6 +1,6 @@
 {
   "name": "flippy.js",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "FLIP animation helper; animate DOM changes with ease",
   "main": "dist/flippy.bundle.js",
   "keywords": [
