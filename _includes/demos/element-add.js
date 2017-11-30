@@ -1,9 +1,9 @@
-let $column = document.querySelector(".adding-elements .column");
+const $column = document.querySelector(".adding-elements .column");
 
 setInterval(addModule, 2000);
 
 function addModule() {
-    let $module = document.createElement("div");
+    const $module = document.createElement("div");
     $module.classList.add("module");
 
     flip(

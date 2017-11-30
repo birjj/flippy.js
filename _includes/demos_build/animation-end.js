@@ -1,7 +1,6 @@
 "use strict";
 
 var $module = document.querySelector(".listening-for-animation-end .module");
-var index = -1;
 var baseState = {
     left: "", top: "",
     right: "", bottom: "",
@@ -18,6 +17,7 @@ var states = [{
 }, {
     top: "50px", right: "50px"
 }];
+var index = -1;
 
 function animate() {
     if (index === states.length - 1) {

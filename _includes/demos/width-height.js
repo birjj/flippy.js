@@ -7,7 +7,7 @@ function createFlipElm(elm) {
         }
     );
 }
-let $elm = document.querySelector(".animating-width-and-height-instead-of-scale .module");
+const $elm = document.querySelector(".animating-width-and-height-instead-of-scale .module");
 let _elm;
 $elm.addEventListener("click",
     () => {

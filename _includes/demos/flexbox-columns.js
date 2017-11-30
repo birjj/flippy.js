@@ -1,5 +1,5 @@
-let $elm = document.getElementById("flexbox-columns-movable");
-let $parents = [
+const $elm = document.getElementById("flexbox-columns-movable");
+const $parents = [
     ".flexbox-columns",
     ".flexbox-columns .column:nth-child(2)"
 ].map(elm=>document.querySelector(elm));

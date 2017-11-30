@@ -1,11 +1,10 @@
-let $module = document.querySelector(".listening-for-animation-end .module");
-let index = -1;
-let baseState = {
+const $module = document.querySelector(".listening-for-animation-end .module");
+const baseState = {
     left: "", top: "",
     right: "", bottom: "",
     transform: ""
 };
-let states = [
+const states = [
     {
         left: "50px", top: "50px",
         transform: "rotate(45deg)"
@@ -21,6 +20,7 @@ let states = [
         top: "50px", right: "50px"
     }
 ];
+let index = -1;
 
 function animate() {
     if (index === states.length-1) {
@@ -30,7 +30,7 @@ function animate() {
     flip(
         $module,
         ()=>{
-            let state = states[++index];
+            const state = states[++index];
             for (let prop in baseState) {
                 if (state.hasOwnProperty(prop)) {
                     $module.style[prop] = state[prop];
