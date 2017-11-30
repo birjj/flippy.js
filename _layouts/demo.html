@@ -30,7 +30,9 @@
     </style>
     {% endif %}
     <script>
-        {% include {{ page.script | replace:"demos/","demos_build/" }} %}
+        (function(){
+            {% include {{ page.script | replace:"demos/","demos_build/" }} %}
+        })();
     </script>
 </div>
 <div class="container">
