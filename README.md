@@ -10,7 +10,7 @@ For specifics, see [our docs](https://github.com/birjolaxew/flippy.js/wiki/Usage
 
 Here's a quick example:
 ```javascript
-let container = document.querySelector(".notification-container");
+const container = document.querySelector(".notification-container");
 flip(
   ".notification", // the elements to animate
   ()=>{ // called when we should make the DOM change
